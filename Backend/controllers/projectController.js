@@ -244,6 +244,14 @@ const deleteProject = async (req, res) => {
     const ActivityLog = require("../models/ActivityLog");
     await ActivityLog.deleteMany({ project: project._id });
 
+    // Cascade delete messages
+    const Message = require("../models/Message");
+    await Message.deleteMany({ projectId: project._id });
+
+    // Cascade delete project read statuses
+    const ProjectRead = require("../models/ProjectRead");
+    await ProjectRead.deleteMany({ projectId: project._id });
+
     await project.deleteOne();
 
     res.json({

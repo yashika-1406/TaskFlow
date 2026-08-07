@@ -22,12 +22,14 @@ import {
   FaFolderOpen,
   FaPlus,
   FaUsers,
+  FaTrashAlt,
 } from "react-icons/fa";
 import MainLayout from "../../layouts/MainLayout";
 import StatsCard from "../../components/Dashboard/StatsCard";
 import CreateProjectModal from "../../components/Projects/CreateProjectModal";
 import { useAuth } from "../../context/AuthContext";
-import { createProject, getProjects } from "../../services/projectService";
+import { createProject, getProjects, deleteProject } from "../../services/projectService";
+import { getAssignedProjectManager } from "../../app/helpers/projectPermissions";
 import { getTasks } from "../../services/taskService";
 import { getTeams } from "../../services/teamService";
 import { getUsers } from "../../services/userService";
@@ -163,6 +165,16 @@ const Dashboard = () => {
       await loadDashboardData();
     } catch (error) {
       alert(error.response?.data?.message || "Failed to create project");
+    }
+  };
+
+  const handleDeleteProject = async (projectId) => {
+    if (!window.confirm("Are you sure you want to permanently delete this project? This will delete all tasks and logs.")) return;
+    try {
+      await deleteProject(projectId);
+      await loadDashboardData();
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete project");
     }
   };
 
@@ -471,6 +483,84 @@ const Dashboard = () => {
                           <Line type="monotone" dataKey="To Do" stroke="#ef4444" strokeWidth={2} dot={{ r: 3 }} />
                         </LineChart>
                       </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  <div className="dash-card manage-projects-card" style={{ gridColumn: "span 2" }}>
+                    <div className="dash-card-header" style={{ marginBottom: "16px" }}>
+                      <h3>Manage Projects</h3>
+                    </div>
+                    <div className="projects-list-body" style={{ overflowX: "auto" }}>
+                      {projects.length === 0 ? (
+                        <div className="dashboard-empty-state">No projects active</div>
+                      ) : (
+                        <table style={{ width: "100%", borderCollapse: "collapse", borderSpacing: 0, color: "rgba(255,255,255,0.85)", minWidth: "500px" }}>
+                          <thead>
+                            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.45)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", letterSpacing: "0.5px" }}>
+                              <th style={{ padding: "12px 16px", textAlign: "left" }}>Project</th>
+                              <th style={{ padding: "12px 16px", textAlign: "left" }}>Project Manager</th>
+                              <th style={{ padding: "12px 16px", textAlign: "left" }}>Status</th>
+                              <th style={{ padding: "12px 16px", textAlign: "right" }}>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {projects.map((project) => {
+                              const assignedManager = getAssignedProjectManager(project);
+                              const statusText = project.status || "Planning";
+                              return (
+                                <tr key={project._id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                                  <td style={{ padding: "14px 16px", fontSize: "14px", fontWeight: "500" }}>
+                                    <div style={{ color: "#fff" }}>{project.name}</div>
+                                    <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", marginTop: "2px" }}>{project.description || "No description"}</div>
+                                  </td>
+                                  <td style={{ padding: "14px 16px", fontSize: "13px", color: "rgba(255,255,255,0.7)" }}>
+                                    {assignedManager?.name || "Unassigned"}
+                                  </td>
+                                  <td style={{ padding: "14px 16px" }}>
+                                    <span style={{
+                                      display: "inline-flex",
+                                      alignItems: "center",
+                                      gap: "6px",
+                                      fontSize: "12px",
+                                      fontWeight: "600",
+                                      color: statusText === "Completed" ? "#10b981" : statusText === "In Progress" ? "#3b82f6" : statusText === "On Hold" ? "#f59e0b" : "#ef4444"
+                                    }}>
+                                      <span style={{
+                                        width: "6px",
+                                        height: "6px",
+                                        borderRadius: "50%",
+                                        background: statusText === "Completed" ? "#10b981" : statusText === "In Progress" ? "#3b82f6" : statusText === "On Hold" ? "#f59e0b" : "#ef4444"
+                                      }}></span>
+                                      {statusText}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: "14px 16px", textAlign: "right" }}>
+                                    <button
+                                      onClick={() => handleDeleteProject(project._id)}
+                                      style={{
+                                        background: "rgba(239, 68, 68, 0.12)",
+                                        color: "#ef4444",
+                                        border: "none",
+                                        borderRadius: "8px",
+                                        padding: "8px 12px",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                        fontWeight: "600",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "6px"
+                                      }}
+                                      title="Delete Project"
+                                    >
+                                      <FaTrashAlt /> Delete
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      )}
                     </div>
                   </div>
                 </>
