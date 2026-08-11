@@ -79,7 +79,7 @@ const Sidebar = ({ isCollapsed, onClose }) => {
                     className={({ isActive }) => (isActive ? "submenu-item active" : "submenu-item")}
                     onClick={handleItemClick}
                   >
-                    <span className="submenu-dot">â€¢</span> Users
+                    Users
                   </NavLink>
                 </div>
               </div>
