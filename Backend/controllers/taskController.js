@@ -2,6 +2,7 @@ const Task = require("../models/Task");
 const Project = require("../models/Project");
 const User = require("../models/User");
 const { canManageTasksForProject } = require("../utils/roles");
+const { cloudinary, isCloudinaryConfigured } = require("../config/cloudinary");
 
 const ALLOWED_ATTACHMENT_TYPES = [
   "application/pdf",
@@ -350,9 +351,24 @@ const addTaskAttachment = async (req, res) => {
       return res.status(400).json({ message: "Only PDF, DOC, DOCX, JPG, and PNG attachments are supported." });
     }
 
+    let finalUrl = url.trim();
+    if (isCloudinaryConfigured && finalUrl.startsWith("data:")) {
+      try {
+        const uploadResult = await cloudinary.uploader.upload(finalUrl, {
+          folder: "taskflow/attachments",
+          resource_type: "auto",
+        });
+        if (uploadResult && uploadResult.secure_url) {
+          finalUrl = uploadResult.secure_url;
+        }
+      } catch (cloudErr) {
+        console.warn("Cloudinary upload failed, falling back to direct URL storage:", cloudErr.message);
+      }
+    }
+
     task.attachments.push({
       filename: filename.trim(),
-      url: url.trim(),
+      url: finalUrl,
       mimeType: normalizedMimeType,
       size: Number(size) || 0,
       uploadedBy: req.user._id,

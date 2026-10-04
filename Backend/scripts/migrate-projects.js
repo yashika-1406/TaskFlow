@@ -1,19 +1,23 @@
 /**
  * Database Migration Script: Normalize Project Members Schema
- * Run with: node migrateProjects.js
+ * Run with: npm run migrate:projects (or node scripts/migrate-projects.js)
  */
 
+const path = require("path");
 const mongoose = require("mongoose");
-require("dotenv").config();
+const dotenv = require("dotenv");
 
-const Project = require("./models/Project");
-const User = require("./models/User");
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+
+const Project = require("../models/Project");
+const User = require("../models/User");
 
 async function migrateProjects() {
   try {
     console.log("Connecting to MongoDB...");
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Connected successfully!");
+    const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/taskflow";
+    await mongoose.connect(mongoUri);
+    console.log(" Connected successfully!");
 
     const projects = await Project.find({});
     console.log(`Found ${projects.length} projects to inspect.`);
@@ -72,15 +76,14 @@ async function migrateProjects() {
       }
 
       project.members = updatedMembers;
-      // Mark as modified to force Mongoose to save the array updates
       project.markModified("members");
       await project.save();
-      console.log(`✅ Project "${project.name}" normalized successfully!`);
+      console.log(` Project "${project.name}" normalized successfully!`);
     }
 
-    console.log("\n🎉 Migration completed successfully!");
+    console.log("\n Migration completed successfully!");
   } catch (error) {
-    console.error("❌ Migration failed:", error);
+    console.error(" Migration failed:", error);
   } finally {
     await mongoose.disconnect();
     console.log("Disconnected from MongoDB.");

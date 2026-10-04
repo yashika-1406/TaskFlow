@@ -1,20 +1,30 @@
 {
-  "dependencies": {
-    "axios": "^1.18.1",
-    "bcrypt": "^6.0.0",
-    "cloudinary": "^2.10.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.7.3",
-    "multer": "^2.2.0",
-    "multer-storage-cloudinary": "^2.2.1",
-    "react-router-dom": "^7.18.1",
-    "recharts": "^3.9.1"
+  "name": "taskflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TaskFlow Pro - Enterprise Role-Based Project & Task Management Platform with Cloudinary Integration for HackIndia",
+  "scripts": {
+    "install:all": "npm install --prefix Backend && npm install --prefix Frontend",
+    "dev:backend": "npm run dev --prefix Backend",
+    "start:backend": "npm run start --prefix Backend",
+    "dev:frontend": "npm run dev --prefix Frontend",
+    "build:frontend": "npm run build --prefix Frontend",
+    "seed:sample": "npm run seed:sample --prefix Backend",
+    "seed:users": "npm run seed:users --prefix Backend",
+    "seed:admin": "npm run create:admin --prefix Backend",
+    "migrate:projects": "npm run migrate:projects --prefix Backend"
   },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
-  }
+  "keywords": [
+    "task-management",
+    "project-management",
+    "hackindia",
+    "cloudinary",
+    "react",
+    "vite",
+    "express",
+    "mongodb",
+    "role-based-access-control"
+  ],
+  "author": "Yashika & Team",
+  "license": "ISC"
 }
