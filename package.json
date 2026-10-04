@@ -2,7 +2,7 @@
   "name": "taskflow",
   "version": "1.0.0",
   "private": true,
-  "description": "TaskFlow Pro - Enterprise Role-Based Project & Task Management Platform with Cloudinary Integration for HackIndia",
+  "description": "TaskFlow Pro - Enterprise Role-Based Project & Workflow Management Platform for Dainik Jagran Project",
   "scripts": {
     "install:all": "npm install --prefix Backend && npm install --prefix Frontend",
     "dev:backend": "npm run dev --prefix Backend",
@@ -16,8 +16,10 @@
   },
   "keywords": [
     "task-management",
+    "workflow-management",
     "project-management",
-    "hackindia",
+    "dainik-jagran",
+    "editorial-workflow",
     "cloudinary",
     "react",
     "vite",
